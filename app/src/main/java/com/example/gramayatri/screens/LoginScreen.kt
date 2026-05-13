@@ -79,6 +79,14 @@ fun LoginContent(onLoginClick: () -> Unit) {
         }
     }
 }
+@Composable
+fun LoginScreen(navController: NavHostController) {
+    LoginContent(
+        onLoginClick = {
+            navController.navigate("main")
+        }
+    )
+}
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {

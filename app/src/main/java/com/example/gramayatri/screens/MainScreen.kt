@@ -9,13 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-
+import androidx.compose.foundation.layout.navigationBarsPadding
+// first version
 @Composable
 fun MainScreen(rootNavController: NavHostController) {
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { BottomNavBar(navController) }
+        bottomBar = { BottomNavBar(navController) },
+                modifier = Modifier.navigationBarsPadding()
+
     ) { padding ->
 
         NavHost(
