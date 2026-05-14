@@ -35,7 +35,23 @@ Grama Yatri aims to bridge this gap by providing a digital platform that enhance
 5.	Data is updated and managed using Firebase
 
 ### Screenshots
+### Splash Screen
+<img src="screenshots/splash_screen.jpg" width="200">
 
+### Login Screen
+<img src="screenshots/login_screen.jpg" width="200">
+
+### Home Screen
+<img src="screenshots/home_screen.jpg" width="200">
+
+### Ping Bus 
+<img src="screenshots/ping_bus.jpg" width="200">
+
+### Activity Screen
+<img src="screenshots/activity_screen.jpg" width="200">
+
+### Alerts Screen
+<img src="screenshots/alerts_screen.jpg" width="200">
 
 ### Setup
 1. Clone repository
