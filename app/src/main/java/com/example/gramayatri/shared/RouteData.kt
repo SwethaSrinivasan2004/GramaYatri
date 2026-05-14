@@ -1,34 +1,31 @@
 package com.example.gramayatri.shared
 
-data class Stop(
+data class RouteStop(
+
     val name: String,
+
     val travelTimeFromPrevious: Int
 )
 
 val routeStops = listOf(
 
-    Stop(
-        name = "Village A",
-        travelTimeFromPrevious = 0
-    ),
+    RouteStop("Village A", 0),
 
-    Stop(
-        name = "Village B",
-        travelTimeFromPrevious = 10
-    ),
+    RouteStop("Village B", 10),
 
-    Stop(
-        name = "Village C",
-        travelTimeFromPrevious = 15
-    ),
+    RouteStop("Village C", 15),
 
-    Stop(
-        name = "Village D",
-        travelTimeFromPrevious = 12
-    ),
+    RouteStop("Village D", 12),
 
-    Stop(
-        name = "Town Bus Stand",
-        travelTimeFromPrevious = 20
-    )
+    RouteStop("Town Bus Stand", 20)
 )
+
+enum class BusStatus {
+
+    RUNNING,
+    DELAYED,
+    CANCELLED
+}
+
+var currentBusStatus =
+    BusStatus.RUNNING

@@ -1,6 +1,5 @@
 package com.example.gramayatri.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -8,107 +7,151 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.navigationBarsPadding
+import com.example.gramayatri.data.FirebaseRepository
+import com.example.gramayatri.shared.UserSession
 import com.example.gramayatri.shared.routeStops
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RouteScreen() {
 
-    // current bus position
-    var currentStopIndex by remember { mutableStateOf(0) }
+    var showSheet by remember {
 
-    // notification banner
-    var notification by remember {
-        mutableStateOf("Bus currently at Village A")
+        mutableStateOf(false)
     }
 
-    // calculate ETA
-    fun calculateETA(targetIndex: Int): Int {
+    var notification by remember {
+
+        mutableStateOf(
+            "Bus currently at Village A"
+        )
+    }
+
+    var currentStopIndex by remember {
+
+        mutableStateOf(0)
+    }
+
+    // delay dialog
+    var showDelayDialog by remember {
+
+        mutableStateOf(false)
+    }
+
+    var enteredDelay by remember {
+
+        mutableStateOf("")
+    }
+
+    // total delay
+    var delayMinutes by remember {
+
+        mutableStateOf(0)
+    }
+
+    // ETA calculation
+    fun calculateETA(
+        targetIndex: Int
+    ): Int {
 
         var total = 0
 
-        for (i in currentStopIndex + 1..targetIndex) {
-            total += routeStops[i].travelTimeFromPrevious
+        for (
+        i in currentStopIndex + 1..targetIndex
+        ) {
+
+            total +=
+                routeStops[i]
+                    .travelTimeFromPrevious
         }
+
+        // add delay
+        total += delayMinutes
 
         return total
-    }
-
-    // simulate ping update
-    fun moveBusForward() {
-
-        if (currentStopIndex < routeStops.lastIndex) {
-
-            currentStopIndex++
-
-            notification =
-                "Bus reached ${routeStops[currentStopIndex].name}"
-        }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .navigationBarsPadding()
     ) {
 
-        // title
         Text(
             text = "Live Route ETA",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
 
-        // notification banner
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor =
+                    MaterialTheme
+                        .colorScheme
+                        .primaryContainer
             ),
+
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Text(
                 text = "🔔 $notification",
                 modifier = Modifier.padding(12.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(
+            modifier = Modifier.height(20.dp)
+        )
 
-        // route list
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
 
-            itemsIndexed(routeStops) { index, stop ->
+            itemsIndexed(routeStops) {
+
+                    index,
+                    stop ->
 
                 val statusText =
+
                     when {
 
                         index < currentStopIndex ->
+
                             "Passed"
 
                         index == currentStopIndex ->
+
                             "Bus Here"
 
                         else ->
+
                             "ETA ${calculateETA(index)} mins"
                     }
 
                 val color =
+
                     when {
 
                         index < currentStopIndex ->
+
                             Color.Gray
 
                         index == currentStopIndex ->
+
                             Color(0xFF2E7D32)
 
                         else ->
+
                             Color.Black
                     }
 
@@ -118,46 +161,270 @@ fun RouteScreen() {
                         .padding(vertical = 6.dp)
                 ) {
 
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
 
-                        Column {
+                        Text(
+                            text = stop.name,
+                            fontWeight = FontWeight.Bold,
+                            color = color
+                        )
 
-                            Text(
-                                text = stop.name,
-                                fontWeight = FontWeight.Bold,
-                                color = color
-                            )
+                        Spacer(
+                            modifier = Modifier.height(4.dp)
+                        )
 
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            Text(statusText)
-                        }
+                        Text(statusText)
                     }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
 
-        // ping button
         Button(
+
             onClick = {
-                moveBusForward()
+
+                showSheet = true
             },
+
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Text("Ping Bus")
         }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun RoutePreview() {
-    MaterialTheme {
-        RouteScreen()
+    // ---------------- BOTTOM SHEET ----------------
+
+    if (showSheet) {
+
+        ModalBottomSheet(
+
+            onDismissRequest = {
+
+                showSheet = false
+            }
+        ) {
+
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+
+                Text(
+                    text = "Report Bus Status",
+                    style =
+                        MaterialTheme
+                            .typography
+                            .titleMedium
+                )
+
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+
+                // ---------------- BOARD BUS ----------------
+
+                Button(
+
+                    onClick = {
+
+                        FirebaseRepository.sendActivity(
+
+                            user =
+                                UserSession.username,
+
+                            message =
+                                "Boarded the bus",
+
+                            type = "BOARD"
+                        )
+
+                        // move bus
+                        if (
+                            currentStopIndex <
+                            routeStops.lastIndex
+                        ) {
+
+                            currentStopIndex++
+                        }
+
+                        notification =
+                            "🚌 Bus reached ${
+                                routeStops[
+                                    currentStopIndex
+                                ].name
+                            }"
+
+                        showSheet = false
+                    },
+
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text("Boarded Bus")
+                }
+
+                Spacer(
+                    modifier = Modifier.height(10.dp)
+                )
+
+                // ---------------- BUS PASSED ----------------
+
+                Button(
+
+                    onClick = {
+
+                        FirebaseRepository.sendActivity(
+
+                            user =
+                                UserSession.username,
+
+                            message =
+                                "Bus passed stop",
+
+                            type = "PASS"
+                        )
+
+                        notification =
+                            "🚌 Bus passed stop"
+
+                        showSheet = false
+                    },
+
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text("Bus Passed")
+                }
+
+                Spacer(
+                    modifier = Modifier.height(10.dp)
+                )
+
+                // ---------------- DELAY ----------------
+
+                Button(
+
+                    onClick = {
+
+                        showDelayDialog = true
+                    },
+
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text("Bus Delayed")
+                }
+
+                Spacer(
+                    modifier = Modifier.height(10.dp)
+                )
+
+                // ---------------- CANCEL ----------------
+
+                Button(
+
+                    onClick = {
+
+                        FirebaseRepository.sendActivity(
+
+                            user =
+                                UserSession.username,
+
+                            message =
+                                "Bus cancelled today",
+
+                            type = "CANCEL"
+                        )
+
+                        notification =
+                            "❌ Bus cancelled today"
+
+                        showSheet = false
+                    },
+
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text("Bus Cancelled")
+                }
+            }
+        }
+    }
+
+    // ---------------- DELAY INPUT DIALOG ----------------
+
+    if (showDelayDialog) {
+
+        AlertDialog(
+
+            onDismissRequest = {
+
+                showDelayDialog = false
+            },
+
+            title = {
+
+                Text("Delay Duration")
+            },
+
+            text = {
+
+                OutlinedTextField(
+
+                    value = enteredDelay,
+
+                    onValueChange = {
+
+                        enteredDelay = it
+                    },
+
+                    label = {
+
+                        Text("Delay in minutes")
+                    }
+                )
+            },
+
+            confirmButton = {
+
+                Button(
+
+                    onClick = {
+
+                        delayMinutes =
+                            enteredDelay
+                                .toIntOrNull()
+                                ?: 0
+
+                        FirebaseRepository.sendActivity(
+
+                            user =
+                                UserSession.username,
+
+                            message =
+                                "Bus delayed by $delayMinutes mins",
+
+                            type = "DELAY"
+                        )
+
+                        notification =
+                            "⚠️ Bus delayed by $delayMinutes mins"
+
+                        showDelayDialog = false
+
+                        showSheet = false
+                    }
+                ) {
+
+                    Text("Confirm")
+                }
+            }
+        )
     }
 }
