@@ -53,11 +53,71 @@ Grama Yatri aims to bridge this gap by providing a digital platform that enhance
 ### Alerts Screen
 <img src="screenshots/alerts_screen.jpg" width="200">
 
-### Setup
-1. Clone repository
-2. Open in Android Studio
-3. Add Firebase configuration
-4. Run the project
+### Installation Steps
+1. Clone the Repository
+git clone https://github.com/SwethaSrinivasan2004/GramaYatri.git
+
+3. Open in Android Studio
+ a. Open Android Studio
+ b. Select "Open Project"
+ c.	Choose the cloned folder
+
+4. Firebase Setup
+   a. Create a Firebase project
+   b. Add Android app to Firebase
+   c. Download google-services.json
+   d. Place the file inside:  app/google-services.json
+    
+5. Run the Project
+  a. Sync Gradle files
+  b. Connect emulator or Android device
+  c. Click Run
+
+### Folder Structure
+```text
+GramaYatri/
+│
+├── .idea/
+├── app/
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/com/example/gramayatri/
+│   │       │   ├── components/
+│   │       │   ├── data/
+│   │       │   ├── models/
+│   │       │   ├── navigation/
+│   │       │   ├── screens/
+│   │       │   ├── shared/
+│   │       │   ├── ui/theme/
+│   │       │   └── MainActivity.kt
+│   │       │
+│   │       ├── res/
+│   │       │   ├── drawable/
+│   │       │   ├── mipmap/
+│   │       │   ├── values/
+│   │       │   └── xml/
+│   │       │
+│   │       ├── AndroidManifest.xml
+│   │       └── google-services.json
+│   │
+│   ├── build.gradle.kts
+│   └── proguard-rules.pro
+│
+├── gradle/
+├── screenshots/
+├── .gitignore
+├── README.md
+├── build.gradle.kts
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
+```
+### Future Enhancements
+1. Emergency support features
+2. AI-based route suggestions
+3. Multilingual support
+4. Offline access support
 
 ### Conclusion
 Grama Yatri is a step toward improving rural transportation accessibility through technology. The application demonstrates practical implementation of 
